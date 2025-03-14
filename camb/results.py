@@ -782,11 +782,20 @@ class CAMBdata(F2003Class):
 
         #ZW's edit starts
         if nonlinear:
-            CAMBdata_GetNonLinearMatterPower(byref(self), PK, byref(var1), byref(var2), byref(hubble_units))
-            config.check_global_error('get_[non]linear_matter_power_spectrum')
+            # CAMBdata_GetNonLinearMatterPower(byref(self), PK, byref(var1), byref(var2), byref(hubble_units))
+            # config.check_global_error('get_[non]linear_matter_power_spectrum')
 
 
             if (self.Params.MG_flag != 0):
+
+                #ZW's new edit starts 
+                new_cambdata = copy.copy(self)
+                new_cambdata.Params.omnuh2 = 0
+
+                #get pseudo power spectrum
+                CAMBdata_GetNonLinearMatterPower(new_cambdata, PK, byref(var1), byref(var2), byref(hubble_units))
+                config.check_global_error('get_[non]linear_matter_power_spectrum')
+                #ZW's new edit ends
 
                 if (var1.value == c_int(Transfer_tot).value and var2.value == c_int(Transfer_tot).value):
 
@@ -885,6 +894,8 @@ class CAMBdata(F2003Class):
                     raise Exception("nonlinear power spectrum for MG models only supported for matter-matter, Weyl-Weyl and matter-Weyl currently.")            
             else:
                 #LCDM
+                CAMBdata_GetNonLinearMatterPower(byref(self), PK, byref(var1), byref(var2), byref(hubble_units))
+                config.check_global_error('get_[non]linear_matter_power_spectrum')
                 PK = PK
 
 
